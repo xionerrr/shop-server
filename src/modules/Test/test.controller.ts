@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common'
 
-import { I_Test } from './test.interface'
+import { I_Test } from './models/test.interface'
 import { TestService } from './test.service'
 
 @Controller('test')
