@@ -33,11 +33,17 @@ export class AuthService {
     return tokens
   }
 
-  signInLocal() {}
+  signInLocal() {
+    console.log('signInLocal')
+  }
 
-  logout() {}
+  logout() {
+    console.log('logout')
+  }
 
-  refreshTokens() {}
+  refreshTokens() {
+    console.log('refreshTokens')
+  }
 
   async updateRefreshToken(userId: number, refreshToken: string) {
     const hash = await this.hashData(refreshToken)
