@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config'
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
@@ -9,7 +10,11 @@ import { Tokens } from './models'
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private config: ConfigService,
+  ) {}
 
   async signUpLocal(dto: SignUpDto): Promise<Tokens> {
     const hash = await this.hashData(dto.password)
@@ -58,7 +63,7 @@ export class AuthService {
           email,
         },
         {
-          secret: 'at-secret',
+          secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
           expiresIn: 60 * 15,
         },
       ),
@@ -68,7 +73,7 @@ export class AuthService {
           email,
         },
         {
-          secret: 'rt-secret',
+          secret: this.config.get<string>('REFRESH_TOKEN_SECRET'),
           expiresIn: 60 * 60 * 24 * 7,
         },
       ),
