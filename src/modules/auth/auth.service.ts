@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config'
+import { ForbiddenException } from '@nestjs/common/exceptions'
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
@@ -27,22 +28,67 @@ export class AuthService {
     })
 
     const tokens = await this.getTokens(newUser.id, newUser.email)
-
     await this.updateRefreshToken(newUser.id, tokens.refresh_token)
-
     return tokens
   }
 
-  signInLocal() {
-    console.log('signInLocal')
+  async signInLocal(dto: SignUpDto): Promise<Tokens> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    })
+
+    if (!user) throw new ForbiddenException('Access denied')
+
+    const passwordMatches = await bcrypt.compare(dto.password, user.hash)
+
+    if (!passwordMatches) throw new ForbiddenException('Access denied')
+
+    const tokens = await this.getTokens(user.id, user.email)
+    await this.updateRefreshToken(user.id, tokens.refresh_token)
+    return tokens
   }
 
-  logout() {
-    console.log('logout')
+  async logout(userId: number): Promise<{ message: string }> {
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        hashedRt: {
+          not: null,
+        },
+      },
+      data: {
+        hashedRt: null,
+      },
+    })
+
+    return {
+      message: `Success, logged out ${userId}`,
+    }
   }
 
-  refreshTokens() {
-    console.log('refreshTokens')
+  async refreshTokens(
+    userId: number,
+    rt: string,
+  ): Promise<{ new_token: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    })
+    if (!user) throw new ForbiddenException('Access denied')
+
+    const refreshTokenMatches = await bcrypt.compare(rt, user.hashedRt)
+
+    if (!refreshTokenMatches) throw new ForbiddenException('Access denied')
+
+    const tokens = await this.getTokens(user.id, user.email)
+    await this.updateRefreshToken(user.id, tokens.refresh_token)
+
+    return {
+      new_token: tokens.access_token,
+    }
   }
 
   async updateRefreshToken(userId: number, refreshToken: string) {
