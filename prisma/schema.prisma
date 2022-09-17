@@ -18,6 +18,17 @@ model User {
   email    String  @unique
   hash     String
   hashedRt String?
+  todos    Todo[]
 
   @@map("users")
+}
+
+model Todo {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String?
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    Int
 }
