@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString, IsNumber } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { Prisma } from '@prisma/client'
 
-export class createTodoDto {
+export class UpdateTodoDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -14,5 +14,5 @@ export class createTodoDto {
   @IsString()
   description?: string
 
-  authorId: number
+  authorEmail: string
 }
