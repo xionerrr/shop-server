@@ -14,11 +14,10 @@ model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  email    String  @unique
-  hash     String
-  hashedRt String?
-  todos    Todo[]
+  email     String   @unique
+  hash      String
+  hashedRt  String?
+  todos     Todo[]
 
   @@map("users")
 }
@@ -29,6 +28,8 @@ model Todo {
   updatedAt   DateTime @updatedAt
   title       String
   description String?
-  author      User     @relation(fields: [authorId], references: [id])
-  authorId    Int
+  author      User?    @relation(fields: [authorId], references: [id])
+  authorId    Int?
+
+  @@map("todos")
 }

@@ -1,7 +1,7 @@
 import { Post, Body, HttpCode, UseGuards, Req } from '@nestjs/common/decorators'
 import { Controller, HttpStatus } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiTags, ApiResponse } from '@nestjs/swagger'
+import { ApiTags, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
 import { Request } from 'express'
 
 import { AuthService } from './auth.service'
@@ -40,6 +40,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Successfully logged out.',
@@ -53,6 +54,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt-refresh'))
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Successfully refreshed token.',
