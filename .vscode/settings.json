@@ -3,6 +3,7 @@
         "datasources",
         "nestjs",
         "signin",
-        "Todos"
+        "Todos",
+        "websockets"
     ]
 }
